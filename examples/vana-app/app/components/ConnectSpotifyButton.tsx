@@ -72,8 +72,66 @@ function stateLabel(stateType: string): string {
       return "Ready";
   }
 }
+// --- MUSIC DNA ENGINE ---
+function analyzeMusicDNA(data: unknown) {
+  if (!data || typeof data !== "object") return null;
+  const record = data as Record<string, any>;
+  const tracks = record.savedTracks;
 
-export function ConnectSpotifyButton() {
+  if (!Array.isArray(tracks) || tracks.length === 0) return null;
+
+  const artistCounts: Record<string, number> = {};
+  const albumCounts: Record<string, number> = {};
+
+  tracks.forEach((track: any) => {
+    if (track?.artists && Array.isArray(track.artists)) {
+      track.artists.forEach((artist: any) => {
+        if (artist?.name) {
+          artistCounts[artist.name] = (artistCounts[artist.name] || 0) + 1;
+        }
+      });
+    }
+    if (track?.album?.name) {
+      albumCounts[track.album.name] = (albumCounts[track.album.name] || 0) + 1;
+    }
+  });
+
+  const uniqueArtistsCount = Object.keys(artistCounts).length;
+  let personality = "🎧 THE EXPLORER";
+  let description =
+    "Your taste is driven by curiosity. You don't stay in one musical lane.";
+
+  if (uniqueArtistsCount <= tracks.length * 0.4) {
+    personality = "🔥 THE LOYAL LISTENER";
+    description =
+      "You know what you like and stick to it. Your favorite artists get a lot of love!";
+  } else if (uniqueArtistsCount >= tracks.length * 0.8) {
+    personality = "🚀 THE NOMAD";
+    description =
+      "You rarely listen to the same artist twice. Always exploring new horizons!";
+  }
+
+  const topArtist =
+    Object.keys(artistCounts).sort(
+      (a, b) => artistCounts[b] - artistCounts[a],
+    )[0] || "Unknown";
+  const topAlbum =
+    Object.keys(albumCounts).sort(
+      (a, b) => albumCounts[b] - albumCounts[a],
+    )[0] || "Unknown";
+
+  return {
+    personality,
+    description,
+    topArtist,
+    topAlbum,
+    totalSavedTracks: tracks.length,
+    uniqueArtists: uniqueArtistsCount,
+  };
+}
+// ------------------------
+
+export default function ConnectSpotifyButton() {
   const connect = useDirectVanaConnect({
     createRequest: () =>
       readJson<AccessRequest>("/api/vana/request", {
@@ -106,6 +164,7 @@ export function ConnectSpotifyButton() {
         : "",
     [result],
   );
+  const musicDNA = useMemo(() => analyzeMusicDNA(result?.data), [result]);
 
   const canStart =
     connect.state.type === "idle" ||
@@ -116,8 +175,8 @@ export function ConnectSpotifyButton() {
     <section className="connect-panel" aria-labelledby="connect-title">
       <div className="connect-header">
         <div>
-          <p className="eyebrow">Example app</p>
-          <h1 id="connect-title">Spotify Taste</h1>
+          <p className="eyebrow">Powered by Vana</p>
+          <h1 id="connect-title">Spotify</h1>
         </div>
         <span className={`status-pill status-${connect.state.type}`}>
           {stateLabel(connect.state.type)}
@@ -131,7 +190,9 @@ export function ConnectSpotifyButton() {
 
       <div className="actions">
         <button disabled={!canStart} onClick={connect.start} type="button">
-          {connect.state.type === "done" ? "Run again" : "Connect Spotify"}
+          {connect.state.type === "done"
+            ? "View My DNA"
+            : "Discover My Music DNA"}
         </button>
         {connect.state.type !== "idle" && (
           <button className="secondary" onClick={connect.reset} type="button">
@@ -165,17 +226,178 @@ export function ConnectSpotifyButton() {
         <div className="notice error">{connect.state.error.message}</div>
       )}
 
-      {result && (
-        <div className="result">
-          <div className="result-summary">
-            <span>Scope</span>
-            <strong>{result.scope}</strong>
-            <span>Payload</span>
-            <strong>{payloadSummary(result.data)}</strong>
-            <span>Payment</span>
-            <strong>{result.payment ? "settled" : "not required"}</strong>
+      {result && musicDNA && (
+        <div
+          style={{
+            marginTop: "2rem",
+            padding: "1.5rem",
+            backgroundColor: "#f6f6f6",
+            borderRadius: "16px",
+            textAlign: "center",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "0.75rem",
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              color: "#666",
+              textTransform: "uppercase",
+            }}
+          >
+            Your Music DNA
+          </p>
+          <h2
+            style={{
+              fontSize: "1.75rem",
+              margin: "1rem 0",
+              color: "#111",
+              fontWeight: 800,
+              lineHeight: "1.2",
+            }}
+          >
+            {musicDNA.personality}
+          </h2>
+          <p
+            style={{
+              fontSize: "1rem",
+              color: "#444",
+              marginBottom: "1.5rem",
+              fontStyle: "italic",
+            }}
+          >
+            "{musicDNA.description}"
+          </p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "0.75rem",
+              textAlign: "left",
+            }}
+          >
+            <div
+              style={{
+                padding: "0.75rem",
+                backgroundColor: "#fff",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "0.65rem",
+                  color: "#888",
+                  textTransform: "uppercase",
+                  marginBottom: "0.25rem",
+                }}
+              >
+                Top Artist
+              </div>
+              <strong style={{ fontSize: "1rem", color: "#111" }}>
+                {musicDNA.topArtist}
+              </strong>
+            </div>
+            <div
+              style={{
+                padding: "0.75rem",
+                backgroundColor: "#fff",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "0.65rem",
+                  color: "#888",
+                  textTransform: "uppercase",
+                  marginBottom: "0.25rem",
+                }}
+              >
+                Top Album
+              </div>
+              <strong style={{ fontSize: "1rem", color: "#111" }}>
+                {musicDNA.topAlbum}
+              </strong>
+            </div>
+            <div
+              style={{
+                padding: "0.75rem",
+                backgroundColor: "#fff",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "0.65rem",
+                  color: "#888",
+                  textTransform: "uppercase",
+                  marginBottom: "0.25rem",
+                }}
+              >
+                Unique Artists
+              </div>
+              <strong style={{ fontSize: "1rem", color: "#111" }}>
+                {musicDNA.uniqueArtists}
+              </strong>
+            </div>
+            <div
+              style={{
+                padding: "0.75rem",
+                backgroundColor: "#fff",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "0.65rem",
+                  color: "#888",
+                  textTransform: "uppercase",
+                  marginBottom: "0.25rem",
+                }}
+              >
+                Saved Tracks
+              </div>
+              <strong style={{ fontSize: "1rem", color: "#111" }}>
+                {musicDNA.totalSavedTracks}
+              </strong>
+            </div>
           </div>
-          <pre>{preview}</pre>
+
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator
+                  .share({
+                    title: "My Music DNA",
+                    text: `My Spotify Music DNA is ${musicDNA.personality}! ${musicDNA.description} Powered by Vana.`,
+                    url: window.location.href,
+                  })
+                  .catch(console.error);
+              } else {
+                navigator.clipboard.writeText(
+                  `My Music DNA is ${musicDNA.personality}!`,
+                );
+                alert("Copied to clipboard!");
+              }
+            }}
+            style={{
+              marginTop: "1.5rem",
+              width: "100%",
+              padding: "0.875rem",
+              backgroundColor: "#1ed760",
+              color: "#000",
+              border: "none",
+              borderRadius: "50px",
+              fontWeight: 700,
+              fontSize: "1rem",
+              cursor: "pointer",
+            }}
+          >
+            Share My Music DNA
+          </button>
         </div>
       )}
     </section>

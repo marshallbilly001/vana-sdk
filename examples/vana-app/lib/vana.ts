@@ -75,12 +75,13 @@ function sampleDataUrl(): string {
 }
 
 function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return value;
-}
+    const value = process.env[name];
+      if (!value) {
+          console.error(`💥 VARIABEL HILANG: ${name} tidak ditemukan di sistem Vercel!`);
+              throw new Error(`Missing required environment variable: ${name}`);
+                }
+                  return value;
+ }
 
 function optionalEndpoints(): Partial<DirectServiceEndpoints> | undefined {
   const endpoints: Partial<DirectServiceEndpoints> = {};
@@ -198,8 +199,13 @@ function createConfiguredController(): DirectDataController {
 let controller: DirectDataController | undefined;
 
 export function getVanaController(): DirectDataController {
-  controller ??= createConfiguredController();
-  return controller;
+    try {
+        controller ??= createConfiguredController();
+            return controller;
+              } catch (error: any) {
+                  console.error("💥 ERROR FATAL VANA:", error?.message || error);
+                      throw error;
+                        }
 }
 
 export function getExampleAppInfo(): ExampleAppInfo {

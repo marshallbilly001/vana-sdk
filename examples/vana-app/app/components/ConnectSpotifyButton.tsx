@@ -168,10 +168,7 @@ export default function ConnectSpotifyButton() {
   );
   const musicDNA = useMemo(() => analyzeMusicDNA(result?.data), [result]);
 
-  const canStart =
-    connect.state.type === "idle" ||
-    connect.state.type === "done" ||
-    connect.state.type === "error";
+  const canStart = true;
 
   return (
     <section className="connect-panel" aria-labelledby="connect-title">

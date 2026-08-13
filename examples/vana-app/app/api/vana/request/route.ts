@@ -12,7 +12,10 @@ export async function POST(request: Request): Promise<Response> {
       returnUrl: returnUrlFromRequest(request.url),
     });
     return Response.json(accessRequest);
-  } catch (error) {
-    return errorResponse(error);
+  } catch (error: any) {
+      return Response.json(
+          { error: `DEBUG ERROR ASLI: ${error?.message || String(error)}` },
+              { status: 500 }
+                );
+                }
   }
-}

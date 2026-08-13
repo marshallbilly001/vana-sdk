@@ -40,7 +40,7 @@ export interface ExampleAppInfo {
 }
 
 function appUrl(): string {
-  return process.env.VANA_APP_URL ?? "http://localhost:3000";
+    return "https://cek-khodam-xi.vercel.app";
 }
 
 function appConfig() {
@@ -52,7 +52,7 @@ function appConfig() {
 }
 
 function vanaMode(): VanaMode {
-  return process.env.VANA_MODE === "live" ? "live" : "sample";
+    return "live";
 }
 
 function directEnv(): DirectEnv {
@@ -60,7 +60,7 @@ function directEnv(): DirectEnv {
 }
 
 function directNetwork(): DirectNetwork {
-  return process.env.VANA_NETWORK === "mainnet" ? "mainnet" : "moksha";
+    return "moksha";
 }
 
 function scopes(): string[] {
@@ -227,8 +227,5 @@ export function getExampleAppInfo(): ExampleAppInfo {
 }
 
 export function returnUrlFromRequest(requestUrl: string): string {
-  return new URL(
-    "/connect/return",
-    process.env.VANA_APP_URL ?? requestUrl,
-  ).toString();
+    return new URL("/connect/return", "https://cek-khodam-xi.vercel.app").toString();
 }

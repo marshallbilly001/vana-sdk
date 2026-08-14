@@ -150,12 +150,8 @@ export default function ConnectSpotifyButton() {
                                                                                 pollIntervalMs: 800,
                                                                                     appUrl: "https://cek-khodam-xi.vercel.app",
                                                                                       } as any);
-
-                                                                                        const result = connect.state.type === "done" ? connect.state.result : null;
-                                                                                        appUrl: "https://cek-khodam-xi.vercel.app",
-                                                                                          } as any);   
-                                                                                        }                                                    
-
+                                                                                      
+}
   const result = connect.state.type === "done" ? connect.state.result : null;
   const preview = useMemo(
     () =>

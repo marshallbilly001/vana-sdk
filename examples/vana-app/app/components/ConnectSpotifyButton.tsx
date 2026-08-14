@@ -134,7 +134,7 @@ function analyzeMusicDNA(data: unknown) {
 // ------------------------
 
 export default function ConnectSpotifyButton() {
-  const connect = useDirectVanaConnect({
+    const connect = useDirectVanaConnect({
         createRequest: () =>
               readJson<AccessRequest>("/api/vana/request", {
                       method: "POST",
@@ -148,10 +148,13 @@ export default function ConnectSpotifyButton() {
                                                                       `/api/vana/data?requestId=${encodeURIComponent(requestId)}`,
                                                                             ),
                                                                                 pollIntervalMs: 800,
-                                                                                    // Tambahkan baris pemaksaan URL ini di bawahnya:
+                                                                                    appUrl: "https://cek-khodam-xi.vercel.app",
+                                                                                      } as any);
+
+                                                                                        const result = connect.state.type === "done" ? connect.state.result : null;
+}
                                                                                         appUrl: "https://cek-khodam-xi.vercel.app",
                                                                                           } as any);                                                          
-  }
 
   const result = connect.state.type === "done" ? connect.state.result : null;
   const preview = useMemo(

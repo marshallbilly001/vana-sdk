@@ -21,7 +21,7 @@ const SAMPLE_REQUEST_ID = "dcr_spotify_taste_demo";
 const SAMPLE_GRANT_ID =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
 const SOURCE = "spotify";
-const DEFAULT_SCOPE = "spotify.savedTracks";
+const DEFAULT_SCOPE = "spotify.profile";
 const DEFAULT_SAMPLE_DATA_URL =
   "https://raw.githubusercontent.com/vana-com/data-connectors/main/connectors/spotify/fixtures/spotify.savedTracks.large.json";
 

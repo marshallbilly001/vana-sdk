@@ -162,7 +162,7 @@ export default function ConnectSpotifyButton() {
       <div className="connect-header">
         <div>
           <p className="eyebrow">Powered by Vana</p>
-          <h1 id="connect-title">Spotify</h1>
+          <h1 id="connect-title">KHODAM SPOTIFY</h1>
         </div>
         <span className={`status-pill status-${connect.state.type}`}>
           {stateLabel(connect.state.type)}

@@ -74,84 +74,68 @@ function stateLabel(stateType: string): string {
       return "Ready";
   }
 }
-// --- MUSIC DNA ENGINE ---
+
+// --- MUSIC DNA ENGINE (VERSI KHODAM SPOTIFY - RAMAH HP) ---
 function analyzeMusicDNA(data: unknown) {
-  if (!data || typeof data !== "object") return null;
-  const record = data as Record<string, any>;
-  const tracks = record.savedTracks;
+  if (!data) return null;
 
-  if (!Array.isArray(tracks) || tracks.length === 0) return null;
-
-  const artistCounts: Record<string, number> = {};
-  const albumCounts: Record<string, number> = {};
-
-  tracks.forEach((track: any) => {
-    if (track?.artists && Array.isArray(track.artists)) {
-      track.artists.forEach((artist: any) => {
-        if (artist?.name) {
-          artistCounts[artist.name] = (artistCounts[artist.name] || 0) + 1;
-        }
-      });
+  const khodams = [
+    { 
+      personality: "🐉 NAGA JEDAG-JEDUG", 
+      description: "Khodam ini bersemayam di bass audimu. Bikin kamu gak bisa diam kalau dengar beat kencang!" 
+    },
+    { 
+      personality: "🧚 PERI INDIE SENJA", 
+      description: "Suka nongkrong di playlist kopimu. Membawamu ke dimensi folk, lofi, dan overthinking malam hari." 
+    },
+    { 
+      personality: "🎸 SILUMAN ROCKER", 
+      description: "Energi khodam ini meledak-ledak! Membuat jiwamu selalu meronta ingin headbang." 
+    },
+    { 
+      personality: "🧙‍♂️ PENYIHIR GALAU", 
+      description: "Khodam ini menyerap energi dari lagu sedihmu. Awas, bikin susah move on!" 
+    },
+    { 
+      personality: "🎧 JIN PODCAST", 
+      description: "Khodam cerewet yang bikin kamu lebih suka dengerin orang ngobrol berjam-jam daripada dengerin musik." 
     }
-    if (track?.album?.name) {
-      albumCounts[track.album.name] = (albumCounts[track.album.name] || 0) + 1;
-    }
-  });
+  ];
 
-  const uniqueArtistsCount = Object.keys(artistCounts).length;
-  let personality = "🎧 THE EXPLORER";
-  let description =
-    "Your taste is driven by curiosity. You don't stay in one musical lane.";
-
-  if (uniqueArtistsCount <= tracks.length * 0.4) {
-    personality = "🔥 THE LOYAL LISTENER";
-    description =
-      "You know what you like and stick to it. Your favorite artists get a lot of love!";
-  } else if (uniqueArtistsCount >= tracks.length * 0.8) {
-    personality = "🚀 THE NOMAD";
-    description =
-      "You rarely listen to the same artist twice. Always exploring new horizons!";
-  }
-
-  const topArtist =
-    Object.keys(artistCounts).sort(
-      (a, b) => artistCounts[b] - artistCounts[a],
-    )[0] || "Unknown";
-  const topAlbum =
-    Object.keys(albumCounts).sort(
-      (a, b) => albumCounts[b] - albumCounts[a],
-    )[0] || "Unknown";
+  // Mengacak hasil berdasarkan data profil secara konsisten
+  const dataString = JSON.stringify(data);
+  const randomIndex = Math.abs(dataString.length) % khodams.length;
+  const khodamTerpilih = khodams[randomIndex];
 
   return {
-    personality,
-    description,
-    topArtist,
-    topAlbum,
-    totalSavedTracks: tracks.length,
-    uniqueArtists: uniqueArtistsCount,
+    personality: khodamTerpilih.personality,
+    description: khodamTerpilih.description,
+    topArtist: "Rahasia Alam Gaib",
+    topAlbum: "Dimensi Spotify",
+    uniqueArtists: "Tak Terhingga",
+    totalSavedTracks: "Misterius",
   };
 }
-// ------------------------
+// ---------------------------------------------------------
 
 export default function ConnectSpotifyButton() {
-    const connect = useDirectVanaConnect({
-        createRequest: () =>
-              readJson<AccessRequest>("/api/vana/request", {
-                      method: "POST",
-                            }),
-                                getStatus: (requestId) =>
-                                      readJson<AccessRequestStatus>(
-                                              `/api/vana/status?requestId=${encodeURIComponent(requestId)}`,
-                                                    ),
-                                                        readResult: (requestId) =>
-                                                              readJson<ApprovedDataResult<unknown>>(
-                                                                      `/api/vana/data?requestId=${encodeURIComponent(requestId)}`,
-                                                                            ),
-                                                                                pollIntervalMs: 800,
-                                                                                    appUrl: "https://cek-khodam-xi.vercel.app",
-                                                                                      } as any);
-                                                                                      
-}
+  const connect = useDirectVanaConnect({
+    createRequest: () =>
+      readJson<AccessRequest>("/api/vana/request", {
+        method: "POST",
+      }),
+    getStatus: (requestId) =>
+      readJson<AccessRequestStatus>(
+        `/api/vana/status?requestId=${encodeURIComponent(requestId)}`,
+      ),
+    readResult: (requestId) =>
+      readJson<ApprovedDataResult<unknown>>(
+        `/api/vana/data?requestId=${encodeURIComponent(requestId)}`,
+      ),
+    pollIntervalMs: 800,
+    appUrl: "https://cek-khodam-xi.vercel.app",
+  } as any);
+
   const result = connect.state.type === "done" ? connect.state.result : null;
   const preview = useMemo(
     () =>
@@ -192,7 +176,7 @@ export default function ConnectSpotifyButton() {
       <div className="actions">
         <button disabled={!canStart} onClick={connect.start} type="button">
           {connect.state.type === "done"
-            ? "View My DNA"
+            ? "View My Khodam"
             : "Discover My Music DNA"}
         </button>
         {connect.state.type !== "idle" && (
@@ -246,7 +230,7 @@ export default function ConnectSpotifyButton() {
               textTransform: "uppercase",
             }}
           >
-            Your Music DNA
+            Khodam Musik Kamu
           </p>
           <h2
             style={{
@@ -293,7 +277,7 @@ export default function ConnectSpotifyButton() {
                   marginBottom: "0.25rem",
                 }}
               >
-                Top Artist
+                Energi Artis
               </div>
               <strong style={{ fontSize: "1rem", color: "#111" }}>
                 {musicDNA.topArtist}
@@ -315,7 +299,7 @@ export default function ConnectSpotifyButton() {
                   marginBottom: "0.25rem",
                 }}
               >
-                Top Album
+                Lokasi Khodam
               </div>
               <strong style={{ fontSize: "1rem", color: "#111" }}>
                 {musicDNA.topAlbum}
@@ -337,7 +321,7 @@ export default function ConnectSpotifyButton() {
                   marginBottom: "0.25rem",
                 }}
               >
-                Unique Artists
+                Kekuatan aura
               </div>
               <strong style={{ fontSize: "1rem", color: "#111" }}>
                 {musicDNA.uniqueArtists}
@@ -359,7 +343,7 @@ export default function ConnectSpotifyButton() {
                   marginBottom: "0.25rem",
                 }}
               >
-                Saved Tracks
+                Status Ikatan
               </div>
               <strong style={{ fontSize: "1rem", color: "#111" }}>
                 {musicDNA.totalSavedTracks}
@@ -372,14 +356,14 @@ export default function ConnectSpotifyButton() {
               if (navigator.share) {
                 navigator
                   .share({
-                    title: "My Music DNA",
-                    text: `My Spotify Music DNA is ${musicDNA.personality}! ${musicDNA.description} Powered by Vana.`,
+                    title: "Khodam Musik Spotify",
+                    text: `Khodam Musik Spotify-ku adalah ${musicDNA.personality}! ${musicDNA.description} Cek khodam musikmu di Cek Khodam Vana!`,
                     url: window.location.href,
                   })
                   .catch(console.error);
               } else {
                 navigator.clipboard.writeText(
-                  `My Music DNA is ${musicDNA.personality}!`,
+                  `Khodam Musik Spotify-ku adalah ${musicDNA.personality}!`,
                 );
                 alert("Copied to clipboard!");
               }
@@ -397,7 +381,7 @@ export default function ConnectSpotifyButton() {
               cursor: "pointer",
             }}
           >
-            Share My Music DNA
+            Share Khodam Musik
           </button>
         </div>
       )}

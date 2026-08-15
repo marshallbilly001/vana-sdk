@@ -1,4 +1,3 @@
-// pancing update
 // @ts-nocheck
 
 "use client";

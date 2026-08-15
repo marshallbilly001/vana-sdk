@@ -1,65 +1,24 @@
 {
-  "name": "vana-sdk-monorepo",
+  "name": "@opendatalabs/vana-app-example",
   "private": true,
   "type": "module",
-  "version": "1.0.9",
-  "description": "Vana SDK monorepo",
-  "workspaces": [
-    "packages/*",
-    "examples/*"
-  ],
   "scripts": {
-    "build": "turbo run build",
-    "build:sdk": "turbo run build --filter='@opendatalabs/vana-sdk'",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix",
-    "lint:ci": "turbo run lint --output-logs=new-only | tee lint-output.txt && echo '\\n=== Lint Summary ===' && grep -c warning lint-output.txt 2>/dev/null | xargs -I {} echo 'Warnings: {}' && grep -c error lint-output.txt 2>/dev/null | xargs -I {} echo 'Errors: {}' || true",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch",
-    "test:coverage": "turbo run test:coverage",
-    "fetch-abis": "turbo run fetch-abis --filter='@opendatalabs/vana-sdk'",
-    "clean": "turbo run clean",
-    "docs": "typedoc",
-    "prepare": "husky",
-    "validate": "turbo run lint typecheck test:coverage"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@opendatalabs/vana-sdk": "file:../../packages/vana-sdk",
+    "next": "^16.2.9",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
-    "@semantic-release/commit-analyzer": "^13.0.0",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^11.0.1",
-    "@semantic-release/npm": "^12.0.1",
-    "@semantic-release/release-notes-generator": "^14.0.1",
-    "conventional-changelog-conventionalcommits": "^8.0.0",
-    "eslint-plugin-jsdoc": "^50.8.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.5.3",
-    "semantic-release": "^24.2.0",
-    "turbo": "^2.6.1",
-    "typedoc": "^0.28.10",
-    "typedoc-plugin-monorepo": "^0.1.0"
-  },
-  "packageManager": "npm@10.9.2",
-  "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md}": [
-      "prettier --write"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/vana-com/vana-sdk.git"
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.8.3"
   }
 }
